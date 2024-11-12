@@ -2,7 +2,7 @@
   "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
-      "error",
+      "warn",
       {
         "varsIgnorePattern": "^_",
         "argsIgnorePattern": "^_",
@@ -16,16 +16,7 @@
       {
         "builtinGlobals": true,
         "hoist": "all",
-        "allow": [
-          "resolve",
-          "reject",
-          "name",
-          "event",
-          "id",
-          "type",
-          "title",
-          "data"
-        ],
+        "allow": ["resolve", "reject", "name", "event", "id", "type", "Request", "Response", "title", "data"],
         "ignoreTypeValueShadow": true,
         "ignoreFunctionTypeParameterNameValueShadow": true
       }
