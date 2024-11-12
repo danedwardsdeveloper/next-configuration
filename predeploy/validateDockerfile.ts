@@ -48,13 +48,7 @@ class FileNotFoundError extends EnvValidatorError {
 }
 
 const defaultConfig: Config = {
-  ignoredVars: new Set([
-    'NODE_ENV',
-    'NODE_VERSION',
-    'PNPM_VERSION',
-    'NODE_ENV',
-    'PORT',
-  ]),
+  ignoredVars: new Set(['NODE_ENV', 'NODE_VERSION', 'PNPM_VERSION', 'NODE_ENV', 'PORT']),
 }
 
 function checkFileExists(filePath: string): void {
@@ -70,9 +64,7 @@ function parseEnvFile(filePath: string, config: Config): Set<string> {
 
     try {
       const parsed = dotenvParse(envContent)
-      return new Set(
-        Object.keys(parsed).filter((key) => !config.ignoredVars.has(key)),
-      )
+      return new Set(Object.keys(parsed).filter(key => !config.ignoredVars.has(key)))
     } catch (error) {
       throw new FileParseError(filePath, error as Error)
     }
@@ -121,16 +113,12 @@ function parseDockerfile(filePath: string, config: Config): Set<string> {
   }
 }
 
-function compareEnvironments(
-  envPath: string,
-  dockerPath: string,
-  config: Config,
-): EnvComparison {
+function compareEnvironments(envPath: string, dockerPath: string, config: Config): EnvComparison {
   const envFileVars = parseEnvFile(envPath, config)
   const dockerfileVars = parseDockerfile(dockerPath, config)
 
-  const missingInEnv = [...dockerfileVars].filter((v) => !envFileVars.has(v))
-  const missingInDocker = [...envFileVars].filter((v) => !dockerfileVars.has(v))
+  const missingInEnv = [...dockerfileVars].filter(v => !envFileVars.has(v))
+  const missingInDocker = [...envFileVars].filter(v => !dockerfileVars.has(v))
 
   return {
     envFileVars,
@@ -149,18 +137,15 @@ function printResults(comparison: EnvComparison, config: Config): void {
 
   if (comparison.missingInDocker.length > 0) {
     console.log('\n❌ Variables in .env but missing in Dockerfile:')
-    comparison.missingInDocker.forEach((v) => console.log(`  - ${v}`))
+    comparison.missingInDocker.forEach(v => console.log(`  - ${v}`))
   }
 
   if (comparison.missingInEnv.length > 0) {
     console.log('\n❌ Variables in Dockerfile but missing in .env:')
-    comparison.missingInEnv.forEach((v) => console.log(`  - ${v}`))
+    comparison.missingInEnv.forEach(v => console.log(`  - ${v}`))
   }
 
-  if (
-    comparison.missingInDocker.length === 0 &&
-    comparison.missingInEnv.length === 0
-  ) {
+  if (comparison.missingInDocker.length === 0 && comparison.missingInEnv.length === 0) {
     console.log('\n✅ All environment variables match between files!')
   }
 
@@ -174,10 +159,7 @@ const dockerPath = path.join(process.cwd(), 'Dockerfile')
 // Allow additional ignored vars through command line arguments
 const additionalIgnoredVars = process.argv.slice(2)
 const config: Config = {
-  ignoredVars: new Set([
-    ...defaultConfig.ignoredVars,
-    ...additionalIgnoredVars,
-  ]),
+  ignoredVars: new Set([...defaultConfig.ignoredVars, ...additionalIgnoredVars]),
 }
 
 try {
@@ -186,9 +168,7 @@ try {
 } catch (error) {
   if (error instanceof FileNotFoundError) {
     console.error(`❌ ${error.message}`)
-    console.error(
-      `Please ensure ${error.filePath} exists in your project root.`,
-    )
+    console.error(`Please ensure ${error.filePath} exists in your project root.`)
   } else if (error instanceof FileParseError) {
     console.error(`❌ ${error.message}`)
     console.error('Please check the file format is correct.')
