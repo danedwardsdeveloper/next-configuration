@@ -12,17 +12,17 @@ interface GlobalWithMongo extends Global {
   _mongoClientPromise?: Promise<MongoClient>
 }
 
-declare const globalWithMongo: GlobalWithMongo
+declare const global: GlobalWithMongo
 
 let client: MongoClient
 let mongoClient: Promise<MongoClient>
 
 if (isDevelopment) {
-  if (!globalWithMongo._mongoClientPromise) {
+  if (!global._mongoClientPromise) {
     client = new MongoClient(uri)
-    globalWithMongo._mongoClientPromise = client.connect()
+    global._mongoClientPromise = client.connect()
   }
-  mongoClient = globalWithMongo._mongoClientPromise!
+  mongoClient = global._mongoClientPromise!
 } else {
   client = new MongoClient(uri)
   mongoClient = client.connect()
