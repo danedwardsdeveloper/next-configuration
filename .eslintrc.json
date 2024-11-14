@@ -16,18 +16,9 @@
       {
         "builtinGlobals": true,
         "hoist": "all",
+        // prettier-ignore
         "allow": [
-          "resolve",
-          "reject",
-          "name",
-          "event",
-          "id",
-          "type",
-          "Request",
-          "Response",
-          "title",
-          "global",
-          "data"
+          "context", "data", "description", "Document", "email", "error", "event", "global", "id", "Image", "message", "name", "params", "password", "path", "props", "query", "reject", "req", "Request", "res", "resolve", "Response", "result", "session", "status", "text", "title", "type", "url", "user", "value"
         ],
         "ignoreTypeValueShadow": true,
         "ignoreFunctionTypeParameterNameValueShadow": true
