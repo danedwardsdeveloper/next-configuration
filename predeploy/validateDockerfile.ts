@@ -1,12 +1,17 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import chalk from 'chalk'
 import { parse as dotenvParse } from 'dotenv'
+
+const defaultEnvPath = path.join(process.cwd(), '.env')
+const defaultDockerPath = path.join(process.cwd(), 'Dockerfile')
 
 interface EnvComparison {
   envFileVars: Set<string>
   dockerfileVars: Set<string>
   missingInEnv: string[]
   missingInDocker: string[]
+  nodeEnvWarning?: string
 }
 
 interface Config {
@@ -57,14 +62,14 @@ function checkFileExists(filePath: string): void {
   }
 }
 
-function parseEnvFile(filePath: string, config: Config): Set<string> {
+function parseEnvFile(filePath: string, configArg: Config): Set<string> {
   try {
     checkFileExists(filePath)
     const envContent = fs.readFileSync(filePath, 'utf8')
 
     try {
       const parsed = dotenvParse(envContent)
-      return new Set(Object.keys(parsed).filter(key => !config.ignoredVars.has(key)))
+      return new Set(Object.keys(parsed).filter(key => !configArg.ignoredVars.has(key)))
     } catch (error) {
       throw new FileParseError(filePath, error as Error)
     }
@@ -76,7 +81,7 @@ function parseEnvFile(filePath: string, config: Config): Set<string> {
   }
 }
 
-function parseDockerfile(filePath: string, config: Config): Set<string> {
+function parseDockerfile(filePath: string, configArg: Config): { vars: Set<string>; content: string } {
   try {
     checkFileExists(filePath)
     const dockerContent = fs.readFileSync(filePath, 'utf8')
@@ -95,13 +100,13 @@ function parseDockerfile(filePath: string, config: Config): Set<string> {
         const matches = dockerContent.matchAll(pattern)
         for (const match of matches) {
           const varName = match[1]
-          if (!config.ignoredVars.has(varName)) {
+          if (!configArg.ignoredVars.has(varName)) {
             envVars.add(varName)
           }
         }
       }
 
-      return envVars
+      return { vars: envVars, content: dockerContent }
     } catch (error) {
       throw new FileParseError(filePath, error as Error)
     }
@@ -113,70 +118,85 @@ function parseDockerfile(filePath: string, config: Config): Set<string> {
   }
 }
 
-function compareEnvironments(envPath: string, dockerPath: string, config: Config): EnvComparison {
-  const envFileVars = parseEnvFile(envPath, config)
-  const dockerfileVars = parseDockerfile(dockerPath, config)
+function checkNodeEnvProduction(dockerContent: string): string | undefined {
+  const nodeEnvPattern = /^ENV\s+(?:--\w+\s+)?NODE_ENV=["']?(\w+)["']?/m
+  const match = dockerContent.match(nodeEnvPattern)
+
+  if (!match) {
+    return 'NODE_ENV is not set in Dockerfile'
+  }
+
+  if (match[1] !== 'production') {
+    return `NODE_ENV is set to "${match[1]}" instead of "production"`
+  }
+
+  return undefined
+}
+
+function compareEnvironments(envPath: string, dockerPath: string, configArg: Config): EnvComparison {
+  const envFileVars = parseEnvFile(envPath, configArg)
+  const { vars: dockerfileVars, content: dockerContent } = parseDockerfile(dockerPath, configArg)
 
   const missingInEnv = [...dockerfileVars].filter(v => !envFileVars.has(v))
   const missingInDocker = [...envFileVars].filter(v => !dockerfileVars.has(v))
+  const nodeEnvWarning = checkNodeEnvProduction(dockerContent)
 
   return {
     envFileVars,
     dockerfileVars,
     missingInEnv,
     missingInDocker,
+    nodeEnvWarning,
   }
 }
-
-function printResults(comparison: EnvComparison, config: Config): void {
+function printResults(comparison: EnvComparison, configArg: Config): void {
   console.log('\n=== Environment Variables Comparison ===\n')
 
-  console.log('Ignored variables:', [...config.ignoredVars].join(', '))
-  console.log('\nVariables in .env:', comparison.envFileVars.size)
-  console.log('Variables in Dockerfile:', comparison.dockerfileVars.size)
+  if (comparison.nodeEnvWarning) {
+    console.log(chalk.yellow('⚠️  Warning:'), chalk.yellow(comparison.nodeEnvWarning))
+    console.log()
+  }
+
+  console.log('Ignored variables:', chalk.dim([...configArg.ignoredVars].join(', ')))
+  console.log('\nVariables in .env:', chalk.blue(comparison.envFileVars.size))
+  console.log('Variables in Dockerfile:', chalk.blue(comparison.dockerfileVars.size))
 
   if (comparison.missingInDocker.length > 0) {
     console.log('\n❌ Variables in .env but missing in Dockerfile:')
-    comparison.missingInDocker.forEach(v => console.log(`  - ${v}`))
+    comparison.missingInDocker.forEach(v => console.log(chalk.red(`  - ${v}`)))
   }
 
   if (comparison.missingInEnv.length > 0) {
     console.log('\n❌ Variables in Dockerfile but missing in .env:')
-    comparison.missingInEnv.forEach(v => console.log(`  - ${v}`))
+    comparison.missingInEnv.forEach(v => console.log(chalk.red(`  - ${v}`)))
   }
 
   if (comparison.missingInDocker.length === 0 && comparison.missingInEnv.length === 0) {
-    console.log('\n✅ All environment variables match between files!')
+    console.log('\n' + chalk.green('✅ All environment variables match between files!'))
   }
 
   console.log('\n=== End of Comparison ===')
 }
 
-// Main execution
-const envPath = path.join(process.cwd(), '.env')
-const dockerPath = path.join(process.cwd(), 'Dockerfile')
-
-// Allow additional ignored vars through command line arguments
-const additionalIgnoredVars = process.argv.slice(2)
-const config: Config = {
-  ignoredVars: new Set([...defaultConfig.ignoredVars, ...additionalIgnoredVars]),
-}
-
 try {
-  const comparison = compareEnvironments(envPath, dockerPath, config)
-  printResults(comparison, config)
+  const comparison = compareEnvironments(defaultEnvPath, defaultDockerPath, defaultConfig)
+  printResults(comparison, defaultConfig)
+
+  if (comparison.missingInDocker.length > 0 || comparison.missingInEnv.length > 0) {
+    process.exit(1)
+  }
 } catch (error) {
   if (error instanceof FileNotFoundError) {
-    console.error(`❌ ${error.message}`)
-    console.error(`Please ensure ${error.filePath} exists in your project root.`)
+    console.error(chalk.red(`❌ ${error.message}`))
+    console.error(chalk.red(`Please ensure ${error.filePath} exists in your project root.`))
   } else if (error instanceof FileParseError) {
-    console.error(`❌ ${error.message}`)
-    console.error('Please check the file format is correct.')
+    console.error(chalk.red(`❌ ${error.message}`))
+    console.error(chalk.red('Please check the file format is correct.'))
   } else if (error instanceof FileReadError) {
-    console.error(`❌ ${error.message}`)
-    console.error('Please check file permissions and try again.')
+    console.error(chalk.red(`❌ ${error.message}`))
+    console.error(chalk.red('Please check file permissions and try again.'))
   } else {
-    console.error('❌ An unexpected error occurred:', error)
+    console.error(chalk.red('❌ An unexpected error occurred:'), error)
   }
   process.exit(1)
 }
