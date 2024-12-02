@@ -23,6 +23,7 @@ app.prepare().then(() => {
 
   server.listen(port, (err?: Error) => {
     if (err) throw err
+    // eslint-disable-next-line no-console
     console.log(`> Ready on http://localhost:${port}`)
   })
 })
