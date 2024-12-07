@@ -5,12 +5,12 @@ export default {
   plugins: [
     // aspectRatio
   ],
-  content: ['./src/app/**/*.{ts,tsx}', './src/components/**/*.{ts,tsx}'],
+  content: ['./src/**/*.{ts,tsx}'],
+  darkMode: 'selector',
   theme: {
     extend: {
-      colors: {
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
+      fontFamily: {
+        // sans: ['var(--font-readex-pro)'],
       },
     },
   },
