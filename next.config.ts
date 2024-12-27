@@ -1,10 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  pageExtensions: ['ts', 'tsx'],
   images: {
-    // deviceSizes: [640, 750],
-    // imageSizes: [16, 32, 64, 128, 256, 384, 512],
     formats: ['image/webp'],
   },
   async redirects() {
@@ -13,13 +10,22 @@ const nextConfig = {
         source: '/:path*',
         has: [
           {
-            type: 'host',
-            // ToDo
+            type: 'host', // Redirect from www.
             value: 'www.my-site.co.uk',
           },
         ],
-        // ToDo
-        destination: 'https://my-site.co.uk//:path*',
+        destination: 'https://my-site.co.uk/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host', // Redirect from Fly.io
+            value: 'my-site.fly.dev',
+          },
+        ],
+        destination: 'https://my-site.co.uk/:path*',
         permanent: true,
       },
     ]
