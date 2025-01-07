@@ -1,9 +1,4 @@
 {
-  "version": "0.2",
-  "ignorePaths": ["pnpm-lock.yaml"],
-  "dictionaryDefinitions": [],
-  "dictionaries": [],
-  "words": [],
-  "ignoreWords": [],
-  "import": []
+  "ignorePaths": ["pnpm-lock.yaml", ".dockerignore", ".gitignore", "Dockerfile"],
+  "words": []
 }
