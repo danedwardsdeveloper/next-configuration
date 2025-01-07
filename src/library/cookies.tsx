@@ -1,4 +1,4 @@
-import { isProduction } from './environment'
+import { isProduction } from './environment/publicVariables'
 
 type CookieOptions = {
   name: string
