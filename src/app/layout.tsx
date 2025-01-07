@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from 'next'
 
+import { productionBaseURL } from '@/library/environment/publicVariables'
+
 import './styles.tailwind.css'
 
 export const metadata: Metadata = {
-  // ToDo
   title: `My Site`,
+  description: `Site description`,
+  alternates: {
+    canonical: productionBaseURL,
+  },
 }
 
 export const viewport: Viewport = {
