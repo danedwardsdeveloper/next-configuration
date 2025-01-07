@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
-    "start": "next build && tsx testServer.ts",
+    "start": "next start",
+    "start:local": "next build && tsx testServer.ts",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "test": "vitest",
@@ -26,7 +27,6 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
-    "dotenv": "^16.4.5",
     "eslint": "^8",
     "eslint-config-next": "15.1.1",
     "express": "^4.21.1",
