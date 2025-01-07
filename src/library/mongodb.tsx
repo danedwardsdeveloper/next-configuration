@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb'
 
-import { isDevelopment } from '@/library/environment'
+import { isDevelopment } from '@/library/environment/publicVariables'
 
 if (!process.env.MONGODB_URI) {
   throw new Error('MONGODB_URI missing')
