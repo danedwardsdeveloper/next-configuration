@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server'
 
-import { bareCustomDomain, bareFlyDomain } from '@/library/environment'
+import { bareCustomDomain, bareFlyDomain } from '@/library/environment/publicVariables'
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
