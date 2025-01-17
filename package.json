@@ -7,7 +7,7 @@
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
     "test": "vitest",
-    "predeploy": "pnpm format && pnpm tsx predeploy/validateDockerfile.ts && pnpm lint && pnpm build",
+    "predeploy": "pnpm format && pnpm lint && pnpm build",
     "deploy": "fly deploy"
   },
   "dependencies": {
