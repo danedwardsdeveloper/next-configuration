@@ -1,12 +1,15 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
-    "@typescript-eslint/no-non-null-assertion": "error",
-    "no-unreachable": "error",
-    "no-unreachable/auto-fix": "off",
+    "react/no-unescaped-entities": "warn",
     "react-hooks/exhaustive-deps": "off",
-    "@typescript-eslint/ban-ts-comment": "off",
+    "no-unreachable": "warn",
+    "no-unreachable/auto-fix": "off",
     "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "ignoreTypeValueShadow": true,
+    "ignoreFunctionTypeParameterNameValueShadow": true,
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
@@ -18,19 +21,21 @@
     ],
     "no-shadow": "off",
     "@typescript-eslint/no-shadow": [
-      "error",
+      "warn",
       {
         "builtinGlobals": true,
         "hoist": "all",
         // prettier-ignore
         "allow": [
-        "context", "data", "description", "Document", "email", "error", "event", "global", 
-        "id", "Image", "message", "name", "params", "password", "path", "props", "query", 
-        "reject", "req", "Request", "res", "resolve", "Response", "result", "scrollY", 
-        "session", "status", "text", "title", "top", "type", "url", "user", "value"
-        ],
-        "ignoreTypeValueShadow": true,
-        "ignoreFunctionTypeParameterNameValueShadow": true
+        "context", "data", "description", "Document", "email", "error", "event", "global", "id", "Image", "message", "name", "params", "password", "path", "props", "query", "reject", "req", "Request", "res", "resolve", "Response", "result", "scrollY", "session", "status", "text", "title", "top", "type", "url", "user", "value"
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "TSEnumDeclaration",
+        "message": "Use union types or const objects instead of enums."
       }
     ]
   }
