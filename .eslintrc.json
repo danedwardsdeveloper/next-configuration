@@ -1,6 +1,7 @@
 {
   "extends": ["next/core-web-vitals", "next/typescript"],
   "rules": {
+    "@typescript-eslint/no-non-null-assertion": "error",
     "no-unreachable": "error",
     "no-unreachable/auto-fix": "off",
     "react-hooks/exhaustive-deps": "off",
