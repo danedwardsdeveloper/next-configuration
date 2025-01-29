@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 
 import { productionBaseURL } from '@/library/environment/publicVariables'
 
+import Providers from '@/components/Providers'
+
 import './styles.tailwind.css'
 
 export const metadata: Metadata = {
@@ -24,7 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en-GB" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }
