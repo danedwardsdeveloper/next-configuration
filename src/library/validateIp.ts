@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const ALLOW_LOCALHOST = true
+const allowLocalHost = true
 
 interface ValidateIpOptions {
   allowLocalhost?: boolean
@@ -13,7 +13,7 @@ interface ValidationResult {
 }
 
 export function validateRequestIp(request: NextRequest, options: ValidateIpOptions = {}): ValidationResult {
-  const { allowLocalhost = ALLOW_LOCALHOST, customMessage = 'Ignored localhost attempt' } = options
+  const { allowLocalhost = allowLocalHost, customMessage = 'Ignored localhost attempt' } = options
 
   const ip =
     request.headers.get('x-real-ip') || request.headers.get('x-forwarded-for')?.split(',')[0] || '0.0.0.0'
