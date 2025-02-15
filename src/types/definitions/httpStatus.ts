@@ -4,6 +4,7 @@ export const HttpStatus = {
   http202accepted: 202,
   http204noContent: 204,
   http206partialContent: 206,
+  // 209?
 
   http400badRequest: 400,
   http401unauthorised: 401,
