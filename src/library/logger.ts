@@ -16,7 +16,7 @@ const logger = {
     ? voidCallback
     : (...args: unknown[]): void => console.warn(chalk.yellow('[WARN]', ...args)),
   error: (...args: unknown[]): void => console.error(chalk.red('[ERROR]'), ...args),
-  unknownErrorWithLabel: (label: string = 'Unknown error: ', error: unknown): void =>
+  errorUnknown: (label: string = 'Unknown error: ', error: unknown): void =>
     console.error(
       chalk.red('[ERROR]'),
       label,
