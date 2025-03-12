@@ -24,10 +24,25 @@ const shouldLog = (messageLevel: LogLevel) => {
 	return logLevels[messageLevel] <= logLevels[currentLevel]
 }
 
-const safeStringify = (data: unknown): string => {
+function safeStringify(data: unknown): string {
 	if (typeof data === 'string') return data
+
 	try {
-		return JSON.stringify(data, null, 2)
+		return JSON.stringify(
+			data,
+			(_key, value) => {
+				if (value instanceof Map || value instanceof Set) {
+					const isMap = value instanceof Map
+					return {
+						__type: isMap ? 'Map' : 'Set',
+						size: value.size,
+						...(isMap ? { entries: Array.from(value.entries()) } : { values: Array.from(value.values()) }),
+					}
+				}
+				return value
+			},
+			2,
+		)
 	} catch {
 		return '[Unserializable data]'
 	}
