@@ -27,6 +27,8 @@ const shouldLog = (messageLevel: LogLevel) => {
 function safeStringify(data: unknown): string {
 	if (typeof data === 'string') return data
 
+	if (data instanceof Promise) return 'Unresolved promise. Did you forget to await?'
+
 	try {
 		return JSON.stringify(
 			data,
