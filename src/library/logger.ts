@@ -1,32 +1,16 @@
-import type { LogLevel } from '@/types'
-import { logLevels } from './constants'
+import type { LogLevel, LogVerb } from '@/types'
+import { browserColours, logLevels, serverColors } from './constants'
 import { browserLogLevel, serverLogLevel } from './environment/publicVariables'
 
 const isServer = typeof window === 'undefined'
 
-const consoleColours = {
-	debug: 'color: #c084fc', // Purple
-	info: 'color: #3498DB', // Blue
-	warn: 'color: #FFA500', // Orange
-	error: 'color: #FF3838', // Red
-}
-
-const serverColors = {
-	reset: '\x1b[0m',
-	debug: '\x1b[35m', // Magenta
-	info: '\x1b[34m', // Blue
-	warn: '\x1b[33m', // Yellow
-	error: '\x1b[31m', // Red
-} as const
-
-const shouldLog = (messageLevel: LogLevel) => {
+const shouldLog = (logLevel: LogLevel) => {
 	const currentLevel = isServer ? serverLogLevel : browserLogLevel
-	return logLevels[messageLevel] <= logLevels[currentLevel]
+	return logLevels[logLevel] <= logLevels[currentLevel]
 }
 
 function safeStringify(data: unknown): string {
 	if (typeof data === 'string') return data
-
 	if (data instanceof Promise) return 'Unresolved promise. Did you forget to await?'
 
 	try {
@@ -34,16 +18,15 @@ function safeStringify(data: unknown): string {
 			data,
 			(_key, value) => {
 				if (value instanceof Map || value instanceof Set) {
-					const isMap = value instanceof Map
 					return {
-						__type: isMap ? 'Map' : 'Set',
+						__type: value instanceof Map ? 'Map' : 'Set',
 						size: value.size,
-						...(isMap ? { entries: Array.from(value.entries()) } : { values: Array.from(value.values()) }),
+						...(value instanceof Map ? { entries: Array.from(value.entries()) } : { values: Array.from(value.values()) }),
 					}
 				}
 				return value
 			},
-			2,
+			2, // JSON whitespace for nested objects
 		)
 	} catch {
 		return '[Unserializable data]'
@@ -52,29 +35,29 @@ function safeStringify(data: unknown): string {
 
 const stringifyArguments = (...args: unknown[]): string[] => args.map((arg) => (typeof arg === 'string' ? arg : safeStringify(arg)))
 
-const createServerLogger = (type: 'debug' | 'info' | 'warn' | 'error', label: string) => {
+const serverLogger = (verb: LogVerb, label: string) => {
 	return (...args: unknown[]) => {
 		const message = stringifyArguments(...args).join(' ')
 		// biome-ignore lint/suspicious/noConsole:
-		console[type](`${serverColors[type]}${label} ${message}${serverColors.reset}`)
+		console[verb === 'success' ? 'log' : verb](`${serverColors[verb]}${label} ${message}${serverColors.reset}`)
 	}
 }
 
-const createBrowserLogger =
-	(type: keyof typeof consoleColours, label: string) =>
+const browserLogger =
+	(verb: LogVerb, label: string) =>
 	(...args: unknown[]): void => {
-		const style = consoleColours[type]
+		const style = browserColours[verb]
 		const message = stringifyArguments(...args).join(' ')
 		// biome-ignore lint/suspicious/noConsole:
-		console[type](`%c${label} ${message}`, style)
+		console[verb === 'success' ? 'log' : verb](`%c${label} ${message}`, style)
 	}
 
-const createLogger = (type: 'debug' | 'info' | 'warn' | 'error', label: string) =>
-	isServer ? createServerLogger(type, label) : createBrowserLogger(type, label)
+const createLogger = (type: LogVerb, label: string) => (isServer ? serverLogger(type, label) : browserLogger(type, label))
 
 const logger = {
-	debug: shouldLog('level4debug') ? createLogger('debug', '[DEBUG]') : () => {},
-	info: shouldLog('level3info') ? createLogger('info', '[INFO]') : () => {},
+	debug: shouldLog('level5debug') ? createLogger('debug', '[DEBUG]') : () => {},
+	info: shouldLog('level4info') ? createLogger('info', '[INFO]') : () => {},
+	success: shouldLog('level3success') ? createLogger('success', '[SUCCESS]') : () => {},
 	warn: shouldLog('level2warn') ? createLogger('warn', '[WARN]') : () => {},
 	error: shouldLog('level1error') ? createLogger('error', '[ERROR]') : () => {},
 }
