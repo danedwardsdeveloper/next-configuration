@@ -4,8 +4,9 @@
 		"build": "next build",
 		"start": "tsx testServer.ts",
 		"lint": "next lint",
+		"format": "biome format . --write",
+		"check": "biome check . --write --unsafe",
 		"links": "linkinator http://localhost:3000 --recurse",
-		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css,scss}\"",
 		"test": "vitest",
 		"predeploy": "pnpm format && pnpm lint && pnpm build",
 		"deploy": "fly deploy"
