@@ -3,6 +3,7 @@ import { dynamicBaseURL } from '@/library/environment/publicVariables'
 import type { Metadata, Viewport } from 'next'
 
 import './styles.tailwind.css'
+import Script from 'next/script'
 import type { ReactNode } from 'react'
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function RootLayout({
 		<html lang="en-GB" suppressHydrationWarning>
 			<body>
 				<Providers>{children}</Providers>
+				<Script src="https://scripts.simpleanalyticscdn.com/latest.js" strategy="lazyOnload" />
 			</body>
 		</html>
 	)
