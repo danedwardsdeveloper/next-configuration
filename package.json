@@ -13,6 +13,7 @@
 		"deploy": "vercel deploy"
 	},
 	"dependencies": {
+		"@heroicons/react": "^2.2.0",
 		"@tailwindcss/postcss": "^4.1.4",
 		"clsx": "^2.1.1",
 		"humanize-plus": "^1.8.2",
