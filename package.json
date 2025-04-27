@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"scripts": {
-		"dev": "NODE_OPTIONS=--no-deprecation next dev --turbo",
+		"dev": "next dev --turbo",
 		"build": "next build",
 		"start": "tsx testServer.ts",
 		"lint": "next lint",
@@ -10,9 +10,10 @@
 		"links": "linkinator http://localhost:3000 --recurse",
 		"test": "vitest",
 		"predeploy": "pnpm format && pnpm lint && pnpm build",
-		"deploy": "fly deploy"
+		"deploy": "vercel deploy"
 	},
 	"dependencies": {
+		"@tailwindcss/postcss": "^4.1.4",
 		"clsx": "^2.1.1",
 		"humanize-plus": "^1.8.2",
 		"next": "15.2.1",
@@ -20,30 +21,31 @@
 		"react": "19.0.0",
 		"react-dom": "19.0.0",
 		"sharp": "^0.33.5",
-		"tailwind-merge": "^3.0.2",
-		"zod": "^3.24.2"
+		"tailwind-merge": "^3.2.0",
+		"url-join": "^5.0.0",
+		"zod": "^3.24.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@next/eslint-plugin-next": "^15.2.1",
+		"@next/eslint-plugin-next": "^15.3.1",
 		"@types/express": "^4.17.21",
 		"@types/humanize-plus": "^1.8.2",
-		"@types/node": "^20.17.6",
-		"@types/react": "^18.3.12",
-		"@types/react-dom": "^18.3.1",
-		"@vitejs/plugin-react": "^4.4.0",
-		"autoprefixer": "^10.4.20",
-		"eslint": "^9.20.1",
-		"eslint-config-next": "^15.2.1",
-		"express": "^4.21.1",
+		"@types/node": "^20.17.31",
+		"@types/react": "^18.3.20",
+		"@types/react-dom": "^18.3.6",
+		"@vitejs/plugin-react": "^4.4.1",
+		"autoprefixer": "^10.4.21",
+		"eslint": "^9.25.1",
+		"eslint-config-next": "^15.3.1",
+		"express": "^4.21.2",
 		"linkinator": "^6.1.2",
 		"node-fetch": "^3.3.2",
-		"postcss": "^8.4.48",
-		"puppeteer": "^24.4.0",
-		"tailwindcss": "^3.4.14",
-		"tsx": "^4.19.2",
-		"typescript": "^5.6.3",
+		"postcss": "^8.5.3",
+		"puppeteer": "^24.7.2",
+		"tailwindcss": "^4.1.4",
+		"tsx": "^4.19.3",
+		"typescript": "^5.8.3",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^3.0.9"
+		"vitest": "^3.1.2"
 	}
 }
