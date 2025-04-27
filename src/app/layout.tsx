@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en-GB" suppressHydrationWarning>
-			<body>
+			<body className="text-base">
 				<Providers>{children}</Providers>
 				<Script src="https://scripts.simpleanalyticscdn.com/latest.js" strategy="lazyOnload" />
 			</body>
