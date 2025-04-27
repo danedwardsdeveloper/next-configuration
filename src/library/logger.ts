@@ -55,11 +55,11 @@ const browserLogger =
 const createLogger = (type: LogVerb, label: string) => (isServer ? serverLogger(type, label) : browserLogger(type, label))
 
 const logger = {
-	debug: shouldLog('level5debug') ? createLogger('debug', '[DEBUG]') : () => {},
-	info: shouldLog('level4info') ? createLogger('info', '[INFO]') : () => {},
-	success: shouldLog('level3success') ? createLogger('success', '[SUCCESS]') : () => {},
-	warn: shouldLog('level2warn') ? createLogger('warn', '[WARN]') : () => {},
-	error: shouldLog('level1error') ? createLogger('error', '[ERROR]') : () => {},
+	debug: shouldLog('level5debug') ? createLogger('debug', '\n[DEBUG]') : () => {},
+	info: shouldLog('level4info') ? createLogger('info', '\n[INFO]') : () => {},
+	success: shouldLog('level3success') ? createLogger('success', '\n[SUCCESS]') : () => {},
+	warn: shouldLog('level2warn') ? createLogger('warn', '\n[WARN]') : () => {},
+	error: shouldLog('level1error') ? createLogger('error', '\n[ERROR]') : () => {},
 }
 
 export default logger
