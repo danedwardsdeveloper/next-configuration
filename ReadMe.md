@@ -4,11 +4,11 @@ Me template for getting started on a Next.js app quickly with pnpm. Just click '
 
 ## Features
 
-- Next.js App router in standalone mode
-- manifest.ts set up
-- robots.ts set up, with a custom CSP so that Lighthouse can download it (essential for perfect Lighthouse scores)
-- File structure how I like it
-- Super strict Eslint settings
-- Prettier configuration
-- Express server for local testing
-- Ready to be deployed with Fly.io
+-  Next.js App router in standalone mode
+-  manifest.ts set up
+-  robots.ts set up, with a custom CSP so that Lighthouse can download it (essential for perfect Lighthouse scores)
+-  Express server for local testing
+
+## ToDo
+
+-  Add date-fns
