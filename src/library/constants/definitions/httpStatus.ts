@@ -1,4 +1,4 @@
-import type { HttpStatus } from '@/types/definitions/httpStatus'
+import type { HttpStatus } from '@/types'
 
 export const http200ok: HttpStatus = 200
 export const http201created: HttpStatus = 201
