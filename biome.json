@@ -50,6 +50,7 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", ".next", "public", "misc", "**/*.tailwind.css"]
+		"ignore": ["node_modules", ".next", "public", "misc", "**/*.tailwind.css"],
+		"include": ["package.json"]
 	}
 }
