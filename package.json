@@ -7,9 +7,10 @@
 		"lint": "next lint",
 		"format": "biome format . --write",
 		"check": "biome check . --write --unsafe",
+		"typecheck": "tsc --noEmit",
 		"links": "linkinator http://localhost:3000 --recurse",
 		"test": "vitest",
-		"predeploy": "pnpm format && pnpm lint && pnpm build",
+		"predeploy": "pnpm typecheck && pnpm format && pnpm lint && pnpm build",
 		"deploy": "vercel deploy"
 	},
 	"dependencies": {
