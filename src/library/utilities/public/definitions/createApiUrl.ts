@@ -1,4 +1,5 @@
-import { developmentBaseURL, dynamicBaseURL, productionBaseURL } from '@/library/environment/publicVariables'
+import { developmentBaseURL, productionBaseURL } from '@/library/environment/publicVariables'
+import { serverSideBaseUrl } from '@/library/environment/serverVariables'
 import urlJoin from 'url-join'
 
 export interface CreateApiUrlParams {
@@ -9,7 +10,7 @@ export interface CreateApiUrlParams {
 }
 
 export function createApiUrl({ domain = 'dynamic', basePath, segment, searchParam }: CreateApiUrlParams): string {
-	const resolvedDomain = domain === 'production' ? productionBaseURL : domain === 'development' ? developmentBaseURL : dynamicBaseURL
+	const resolvedDomain = domain === 'production' ? productionBaseURL : domain === 'development' ? developmentBaseURL : serverSideBaseUrl
 	const resolvedSegment = segment ? String(segment) : ''
 
 	const url = new URL(urlJoin(resolvedDomain, '/api/', basePath, resolvedSegment))
