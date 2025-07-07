@@ -32,7 +32,8 @@
 				"useConst": "warn"
 			},
 			"nursery": {
-				"noEnum": "error"
+				"noEnum": "error",
+				"noNestedTernary": "warn"
 			}
 		}
 	},
