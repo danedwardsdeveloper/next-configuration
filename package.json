@@ -7,7 +7,7 @@
 		"lint": "next lint",
 		"format": "biome format . --write",
 		"check": "biome check . --write --unsafe",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
 		"links": "linkinator http://localhost:3000 --recurse",
 		"test": "vitest",
 		"predeploy": "pnpm typecheck && pnpm format && pnpm lint && pnpm build",
