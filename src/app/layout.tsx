@@ -1,35 +1,38 @@
-import Providers from '@/components/providers'
-import type { Metadata, Viewport } from 'next'
-import './styles.tailwind.css'
-import Script from 'next/script'
-import type { ReactNode } from 'react'
-import { serverSideBaseUrl } from '@/library/environment/serverVariables'
+import type { Metadata, Viewport } from "next";
+import Providers from "@/components/providers";
+import "./styles.tailwind.css";
+import Script from "next/script";
+import type { ReactNode } from "react";
+import { dynamicBaseUrl } from "@/library/environment/publicVariables";
 
 export const metadata: Metadata = {
 	title: `Dan's Next.js Configuration`,
-	metadataBase: new URL(serverSideBaseUrl),
-	description: 'Site description',
+	metadataBase: new URL(dynamicBaseUrl),
+	description: "Site description",
 	alternates: {
-		canonical: serverSideBaseUrl,
+		canonical: dynamicBaseUrl,
 	},
-}
+};
 
 export const viewport: Viewport = {
 	initialScale: 1,
-	width: 'device-width',
-}
+	width: "device-width",
+};
 
 export default function RootLayout({
 	children,
 }: Readonly<{
-	children: ReactNode
+	children: ReactNode;
 }>) {
 	return (
 		<html lang="en-GB" suppressHydrationWarning>
 			<body className="text-base">
 				<Providers>{children}</Providers>
-				<Script src="https://scripts.simpleanalyticscdn.com/latest.js" strategy="lazyOnload" />
+				<Script
+					src="https://scripts.simpleanalyticscdn.com/latest.js"
+					strategy="lazyOnload"
+				/>
 			</body>
 		</html>
-	)
+	);
 }
