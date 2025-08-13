@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 export function requireVariable(name: string): string {
 	if (typeof window !== 'undefined') {
 		throw new Error('Browser attempting to import a private environment variable')
