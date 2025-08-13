@@ -1,4 +1,4 @@
-import { mergeClasses } from '@/library/utilities/public'
+import { mergeClasses } from "@/library/utilities/mergeClasses"
 
 interface Props {
 	colour?: 'text-blue-600 dark:text-blue-400' | 'text-white dark:text-blue-300'

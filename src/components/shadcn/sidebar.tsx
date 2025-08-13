@@ -20,7 +20,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { Skeleton } from '@/components/shadcn/skeleton'
 import { TooltipContent, TooltipTrigger, TooltipWrapper } from '@/components/shadcn/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { mergeClasses } from '@/library/utilities/public'
+import { mergeClasses } from '@/library/utilities/mergeClasses'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

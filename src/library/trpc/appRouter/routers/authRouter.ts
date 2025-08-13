@@ -4,7 +4,7 @@ import { cookieNames } from '../../../constants/cookies'
 import { database } from '../../../database/connection'
 import { users, type DangerousUser, signInSchema, createAccountSchema, type SafeUser } from '../../../database/schema'
 import { equals } from '../../../database/utilities'
-import { hashPassword, verifyPassword } from '../../../utilities/server/definitions/hashPassword'
+import { hashPassword, verifyPassword } from '../../../utilities/hashPassword'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../initialisation'
 import { setAuthorisationToken } from '../../jwtUtilities'
 

@@ -1,3 +1,5 @@
+import { PageLayout } from "@/components/AppPageLayout";
+
 export default function SettingsPage() {
-  return <h1>Settings</h1>
+  return <PageLayout title="Settings" error="" />
 }

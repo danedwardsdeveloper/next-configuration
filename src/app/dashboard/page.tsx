@@ -1,3 +1,5 @@
+import { PageLayout } from "@/components/AppPageLayout";
+
 export default function DashboardPage() {
-  return <h1>Dashboard</h1>
+  return <PageLayout title="Dashboard" error="" />
 }
