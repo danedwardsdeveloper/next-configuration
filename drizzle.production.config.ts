@@ -1,11 +1,11 @@
-import { developmentDatabaseString } from '@/library/environment/publicVariables'
+import { productionDatabaseString } from '@/library/environment/serverVariables'
 import type { Config } from 'drizzle-kit'
 
 export default {
 	dialect: 'postgresql',
 	schema: './src/library/database/schema.ts',
 	out: './drizzle',
-	dbCredentials: {  url: developmentDatabaseString},
+	dbCredentials: { url: productionDatabaseString },
 	verbose: true,
 	strict: true,
 } satisfies Config
