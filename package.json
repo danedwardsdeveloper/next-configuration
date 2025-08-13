@@ -29,6 +29,7 @@
 		"drizzle-zod": "^0.8.3",
 		"humanize-plus": "^1.8.2",
 		"jsonwebtoken": "^9.0.2",
+		"lucide-react": "^0.539.0",
 		"next": "15.2.1",
 		"pg": "^8.16.3",
 		"proper-url-join": "^2.1.2",

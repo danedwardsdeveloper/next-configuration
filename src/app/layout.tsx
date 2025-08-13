@@ -4,6 +4,8 @@ import "./styles.tailwind.css";
 import Script from "next/script";
 import type { ReactNode } from "react";
 import { dynamicBaseUrl } from "@/library/environment/publicVariables";
+import { SidebarProvider } from "@/components/shadcn/sidebar";
+import { MenuSideBar } from "@/components/MenuSideBar";
 
 export const metadata: Metadata = {
 	title: `Dan's Next.js Configuration`,
@@ -27,7 +29,12 @@ export default function RootLayout({
 	return (
 		<html lang="en-GB" suppressHydrationWarning>
 			<body className="text-base">
-				<Providers>{children}</Providers>
+				<Providers>
+					<SidebarProvider>
+						<MenuSideBar />
+						<main className="flex-1 p-2">{children}</main>
+					</SidebarProvider>
+				</Providers>
 				<Script
 					src="https://scripts.simpleanalyticscdn.com/latest.js"
 					strategy="lazyOnload"
