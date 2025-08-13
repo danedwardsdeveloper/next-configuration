@@ -1,4 +1,11 @@
 {
-  "ignorePaths": ["pnpm-lock.yaml", ".dockerignore", ".gitignore", "Dockerfile"],
-  "words": []
+  "ignorePaths": [
+    "pnpm-lock.yaml",
+    ".dockerignore",
+    ".gitignore",
+    "Dockerfile"
+  ],
+  "words": [
+    "initialisation"
+  ]
 }
