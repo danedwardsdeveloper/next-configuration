@@ -1,12 +1,50 @@
-import type { LogLevel, LogVerb } from '@/types'
-import { browserColours, logLevels, serverColors } from './constants'
-import { browserLogLevel, serverLogLevel } from './environment/publicVariables'
+type LogVerb = 'debug' | 'info' | 'success' | 'warn' | 'error'
+type ConsoleMethod = Exclude<LogVerb, 'success'> | 'log'
+type Levels = 1 | 2 | 3 | 4 | 5
+type Config = {
+	verb: LogVerb
+	method: ConsoleMethod
+	colourDescription: string
+	serverColour: `\x1b[${number}m`
+	browserColour: `color: #${string}`
+}
 
-const isServer = typeof window === 'undefined'
-
-const shouldLog = (logLevel: LogLevel) => {
-	const currentLevel = isServer ? serverLogLevel : browserLogLevel
-	return logLevels[logLevel] <= logLevels[currentLevel]
+const loggerConfig: Record<Levels, Config> = {
+	1: {
+		verb: 'error',
+		method: 'error',
+		colourDescription: 'red',
+		serverColour: '\x1b[31m',
+		browserColour: 'color: #FF3838',
+	},
+	2: {
+		verb: 'warn',
+		method: 'warn',
+		colourDescription: 'orange',
+		serverColour: '\x1b[33m',
+		browserColour: 'color: #FFA500',
+	},
+	3: {
+		verb: 'debug',
+		method: 'debug',
+		colourDescription: 'magenta',
+		serverColour: '\x1b[35m',
+		browserColour: 'color: #c084fc',
+	},
+	4: {
+		verb: 'info',
+		method: 'info',
+		colourDescription: 'blue',
+		serverColour: '\x1b[34m',
+		browserColour: 'color: #3498DB',
+	},
+	5: {
+		verb: 'success',
+		method: 'log',
+		colourDescription: 'green',
+		serverColour: '\x1b[32m',
+		browserColour: 'color: #16a34a',
+	},
 }
 
 function safeStringify(data: unknown): string {
@@ -26,7 +64,7 @@ function safeStringify(data: unknown): string {
 				}
 				return value
 			},
-			2, // JSON whitespace for nested objects
+			2,
 		)
 	} catch {
 		return '[Unserializable data]'
@@ -35,31 +73,47 @@ function safeStringify(data: unknown): string {
 
 const stringifyArguments = (...args: unknown[]): string[] => args.map((arg) => (typeof arg === 'string' ? arg : safeStringify(arg)))
 
-const serverLogger = (verb: LogVerb, label: string) => {
+const addSkip = <T extends (...args: unknown[]) => void>(fn: T): T & { skip: (...args: unknown[]) => void } => {
+	const fnWithSkip = fn as T & { skip: (...args: unknown[]) => void }
+	fnWithSkip.skip = (..._args: unknown[]) => {}
+	return fnWithSkip
+}
+
+const resetServerColour = '\x1b[0m'
+
+const createServerLogger = (config: (typeof loggerConfig)[keyof typeof loggerConfig], label: string) => {
 	return (...args: unknown[]) => {
 		const message = stringifyArguments(...args).join(' ')
-		// biome-ignore lint/suspicious/noConsole:
-		console[verb === 'success' ? 'log' : verb](`${serverColors[verb]}${label} ${message}${serverColors.reset}`)
+		// biome-ignore lint/suspicious/noConsole: logger
+		console[config.method](`${config.serverColour}${label} ${message}${resetServerColour}`)
 	}
 }
 
-const browserLogger =
-	(verb: LogVerb, label: string) =>
-	(...args: unknown[]): void => {
-		const style = browserColours[verb]
+const serverLogger = {
+	error: addSkip(createServerLogger(loggerConfig[1], '\n[ERROR]')),
+	warn: addSkip(createServerLogger(loggerConfig[2], '\n[WARN]')),
+	debug: addSkip(createServerLogger(loggerConfig[3], '\n[DEBUG]')),
+	info: addSkip(createServerLogger(loggerConfig[4], '\n[INFO]')),
+	success: addSkip(createServerLogger(loggerConfig[5], '\n[SUCCESS]')),
+}
+
+const createBrowserLogger = (config: (typeof loggerConfig)[keyof typeof loggerConfig], label: string) => {
+	return (...args: unknown[]): void => {
 		const message = stringifyArguments(...args).join(' ')
-		// biome-ignore lint/suspicious/noConsole:
-		console[verb === 'success' ? 'log' : verb](`%c${label} ${message}`, style)
+		// biome-ignore lint/suspicious/noConsole: logger
+		console[config.method](`%c${label} ${message}`, config.browserColour)
 	}
-
-const createLogger = (type: LogVerb, label: string) => (isServer ? serverLogger(type, label) : browserLogger(type, label))
-
-const logger = {
-	debug: shouldLog('level5debug') ? createLogger('debug', '\n[DEBUG]') : () => {},
-	info: shouldLog('level4info') ? createLogger('info', '\n[INFO]') : () => {},
-	success: shouldLog('level3success') ? createLogger('success', '\n[SUCCESS]') : () => {},
-	warn: shouldLog('level2warn') ? createLogger('warn', '\n[WARN]') : () => {},
-	error: shouldLog('level1error') ? createLogger('error', '\n[ERROR]') : () => {},
 }
+
+const browserLogger = {
+	error: addSkip(createBrowserLogger(loggerConfig[1], '\n[ERROR]')),
+	warn: addSkip(createBrowserLogger(loggerConfig[2], '\n[WARN]')),
+	debug: addSkip(createBrowserLogger(loggerConfig[3], '\n[DEBUG]')),
+	info: addSkip(createBrowserLogger(loggerConfig[4], '\n[INFO]')),
+	success: addSkip(createBrowserLogger(loggerConfig[5], '\n[SUCCESS]')),
+}
+
+const isServer = typeof window === 'undefined'
+const logger = isServer ? serverLogger : browserLogger
 
 export default logger
