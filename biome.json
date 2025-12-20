@@ -1,7 +1,24 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-	"organizeImports": {
-		"enabled": true
+	"$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"**/*",
+			"!**/node_modules",
+			"!**/.next",
+			"!**/public",
+			"!**/misc",
+			"!**/*.tailwind.css"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
 	},
 	"linter": {
 		"enabled": true,
@@ -13,14 +30,15 @@
 				"noDoubleEquals": "warn",
 				"noEmptyInterface": "warn",
 				"noImplicitAnyLet": "warn",
-				"noPrototypeBuiltins": "warn"
+				"noPrototypeBuiltins": "warn",
+				"noArrayIndexKey": "off"
 			},
 			"correctness": {
-				"useExhaustiveDependencies": "warn",
+				"useExhaustiveDependencies": "off",
 				"noUnusedVariables": "warn",
 				"useHookAtTopLevel": "warn",
 				"noUndeclaredVariables": "warn",
-				"noUnusedImports": "warn"
+				"useJsxKeyInIterable": "off"
 			},
 			"a11y": {
 				"useAltText": "warn",
@@ -30,28 +48,26 @@
 			"style": {
 				"noNonNullAssertion": "info",
 				"useConst": "warn"
-			},
-			"nursery": {
-				"noEnum": "error",
-				"noNestedTernary": "warn"
 			}
 		}
 	},
 	"javascript": {
 		"formatter": {
-			"enabled": true,
 			"quoteStyle": "single",
 			"jsxQuoteStyle": "double",
 			"trailingCommas": "all",
 			"semicolons": "asNeeded",
 			"arrowParentheses": "always",
 			"lineWidth": 140,
-			"indentWidth": 2,
-			"indentStyle": "tab"
+			"indentWidth": 2
 		}
 	},
-	"files": {
-		"ignore": ["node_modules", ".next", "public", "misc", "**/*.tailwind.css"],
-		"include": ["package.json"]
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	}
 }
