@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { dynamicBaseUrl } from '@/library/environment/publicVariables'
 
 export default function robots(): MetadataRoute.Robots {
 	return {
@@ -6,5 +7,6 @@ export default function robots(): MetadataRoute.Robots {
 			userAgent: '*',
 			allow: '/',
 		},
+		sitemap: `${dynamicBaseUrl}/sitemap.xml`,
 	}
 }

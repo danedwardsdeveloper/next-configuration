@@ -1,45 +1,57 @@
-import type { Metadata, Viewport } from "next";
-import Providers from "@/components/providers";
-import "./styles.tailwind.css";
-import Script from "next/script";
-import type { ReactNode } from "react";
-import { dynamicBaseUrl } from "@/library/environment/publicVariables";
-import { SidebarProvider } from "@/components/shadcn/sidebar";
-import { MenuSideBar } from "@/components/MenuSideBar";
+import type { Metadata, Viewport } from 'next'
+import './styles.tailwind.css'
+import { Inter } from 'next/font/google'
+import Script from 'next/script'
+import type { ReactNode } from 'react'
+import { MenuSideBar } from '@/components/MenuSideBar'
+import { TRPCProvider } from '@/components/providers/TRPCProvider'
+import { SidebarProvider } from '@/components/shadcn/sidebar'
+import { dynamicBaseUrl } from '@/library/environment/publicVariables'
+
+const inter = Inter({
+	subsets: ['latin'],
+	display: 'swap',
+	variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
 	title: `Dan's Next.js Configuration`,
 	metadataBase: new URL(dynamicBaseUrl),
-	description: "Site description",
+	description: 'Site description',
 	alternates: {
-		canonical: dynamicBaseUrl,
+		canonical: '/',
 	},
-};
+}
 
 export const viewport: Viewport = {
 	initialScale: 1,
-	width: "device-width",
-};
+	width: 'device-width',
+}
 
 export default function RootLayout({
 	children,
 }: Readonly<{
-	children: ReactNode;
+	children: ReactNode
 }>) {
 	return (
-		<html lang="en-GB" suppressHydrationWarning>
-			<body className="text-base">
-				<Providers>
+		<html
+			lang="en-GB" //
+			suppressHydrationWarning
+			className={`${inter.variable} text-base`}
+			style={{
+				WebkitTextSizeAdjust: '100%',
+				textSizeAdjust: '100%',
+			}}
+		>
+			<body>
+				<TRPCProvider>
 					<SidebarProvider>
 						<MenuSideBar />
-						<main className="flex-1 p-2">{children}</main>
+						{children}
 					</SidebarProvider>
-				</Providers>
-				<Script
-					src="https://scripts.simpleanalyticscdn.com/latest.js"
-					strategy="lazyOnload"
-				/>
+				</TRPCProvider>
+				<Script src="https://scripts.simpleanalyticscdn.com/latest.js" strategy="lazyOnload" />
 			</body>
 		</html>
-	);
+	)
 }

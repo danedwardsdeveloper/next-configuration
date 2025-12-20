@@ -1,0 +1,24 @@
+app = 'dans-next-config-production'
+primary_region = 'lhr'
+
+[build]
+
+[build.args]
+NEXT_PUBLIC_APP_ENV = 'production'
+
+# IMPORTANT: Use Dockerfile CMD instead of auto-detected command
+[processes]
+app = "" # Empty string means "use Dockerfile CMD"
+
+[http_service]
+internal_port = 3000
+force_https = true
+auto_stop_machines = 'stop'
+auto_start_machines = true
+min_machines_running = 1 # Prevent cold starts. Costs about £3 per month but increases conversions dramatically and is a UX boost for everyone
+processes = ["app"] # Routes HTTP traffic to the "app" process
+
+[[vm]]
+memory = '1gb'
+cpu_kind = 'shared'
+cpus = 1

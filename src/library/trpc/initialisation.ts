@@ -1,21 +1,22 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
-import { database } from '../database/connection'
+import type { TrpcMetadata } from '@/types/definitions/procedures'
+import { db } from '../database/connection'
 import { users } from '../database/schema'
 import { equals } from '../database/utilities'
 import { verifyToken } from './jwtUtilities'
 
 const createInnerTRPCContext = async (token?: string, responseHeaders?: Headers) => {
 	return {
-		database,
+		database: db,
 		token,
 		responseHeaders,
 	}
 }
 
-export const createTRPCContextWithToken = async (token?: string, responseHeaders?: Headers) => {
-	return createInnerTRPCContext(token, responseHeaders)
+export const createTrpcContextWithToken = async (customHeaders: Headers, metadata: TrpcMetadata = {}) => {
+	return createInnerTrpcContext(customHeaders, metadata)
 }
 
 export const createTRPCContext = async () => {
@@ -49,11 +50,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 			throw new TRPCError({ code: 'UNAUTHORIZED' })
 		}
 
-		const [result] = await database
-			.select()
-			.from(users)
-			.where(equals(users.id, userId))
-			.limit(1)
+		const [result] = await db.select().from(users).where(equals(users.id, userId)).limit(1)
 
 		if (!result) {
 			throw new TRPCError({ code: 'UNAUTHORIZED' })

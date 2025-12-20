@@ -1,25 +1,82 @@
-import { type NodePgDatabase, drizzle } from 'drizzle-orm/node-postgres'
-import { sql } from 'drizzle-orm'
-import * as schema from './schema'
+import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres'
+import { Pool } from 'pg'
+import type { DatabaseTarget } from '../constants/_misc_constants'
+import { appEnv, developmentDatabaseString } from '../environment/publicVariables'
+import { productionDatabaseString, stagingDatabaseString } from '../environment/serverVariables'
 import logger from '../logger'
-import { isProduction, developmentDatabaseString } from '../environment/publicVariables'
-import { productionDatabaseString } from '../environment/serverVariables'
+import * as schema from './schema'
 
-export const database = drizzle(
-	isProduction // Doing it this way around ensures development is used in tests
-		? productionDatabaseString //
-		: developmentDatabaseString,
-	{ schema },
-)
+export const dbConnectionConfig: Record<DatabaseTarget, string> = {
+	development: developmentDatabaseString,
+	staging: stagingDatabaseString,
+	production: productionDatabaseString,
+}
+
+const connectionString = dbConnectionConfig[appEnv]
+
+// exported for scripts/resetDatabase
+export function truncateConnectionString(cString: string): string {
+	try {
+		const url = new URL(cString)
+		// Mask password but keep other identifying info
+		const maskedPassword = url.password ? '***' : ''
+		return `${url.protocol}//${url.username}${maskedPassword ? `:${maskedPassword}` : ''}@${url.host}${url.pathname}`
+	} catch {
+		// Fallback if URL parsing fails
+		return cString.replace(/:[^:@]+@/, ':***@')
+	}
+}
+
+const pool = new Pool({
+	connectionString,
+	max: 5,
+	idleTimeoutMillis: 30_000,
+	connectionTimeoutMillis: 10_000,
+})
+
+export const db = drizzle(pool, { schema })
+
+// Only create pools when accessed
+// They must be separate or things can go very wrong
+let _devDb: NodePgDatabase<typeof schema> | null = null
+let _stagingDb: NodePgDatabase<typeof schema> | null = null
+let _productionDb: NodePgDatabase<typeof schema> | null = null
+
+export function getDevDb() {
+	if (!_devDb) {
+		const devPool = new Pool({ connectionString: developmentDatabaseString })
+		_devDb = drizzle(devPool, { schema })
+	}
+	return _devDb
+}
+
+export function getStagingDb() {
+	if (!_stagingDb) {
+		const stagingPool = new Pool({ connectionString: stagingDatabaseString })
+		_stagingDb = drizzle(stagingPool, { schema })
+	}
+	return _stagingDb
+}
+
+export function getProductionDb() {
+	if (!_productionDb) {
+		const productionPool = new Pool({ connectionString: productionDatabaseString })
+		_productionDb = drizzle(productionPool, { schema })
+	}
+	return _productionDb
+}
 
 export async function testDatabaseConnection() {
 	try {
-		await database.execute(sql`SELECT 1`)
-		logger.info('Successfully connected to database')
+		await db.execute('select 1')
+		const truncated = truncateConnectionString(connectionString)
+		logger.success(`Connected to ${appEnv} database ${truncated}`)
 	} catch (error) {
-		logger.error('Database connection test failed:', error)
+		const truncated = truncateConnectionString(connectionString)
+		logger.error(`Failed to connect to ${appEnv} database ${truncated}`, error)
 	}
 }
 
 export type Database = NodePgDatabase<typeof schema>
-export type Transaction = Parameters<Parameters<typeof database.transaction>[0]>[0]
+export type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0]
+export type QueryRunner = Database | Transaction

@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noConsole: logger */
 type LogVerb = 'debug' | 'info' | 'success' | 'warn' | 'error'
 type ConsoleMethod = Exclude<LogVerb, 'success'> | 'log'
 type Levels = 1 | 2 | 3 | 4 | 5
@@ -17,7 +18,7 @@ type Logger = {
 	success: ((...args: unknown[]) => void) & { skip: (...args: unknown[]) => void }
 }
 
-const LOG_IN_PRODUCTION = false
+const PRODUCTION_BROWSER_LOGS = true as boolean // Prevent build-time optimization
 
 const isServer = typeof window === 'undefined'
 const isProduction = isServer
@@ -35,7 +36,8 @@ const noOpLogger: Logger = {
 
 let logger: Logger = noOpLogger
 
-if (!isProduction || LOG_IN_PRODUCTION) {
+// Server: always log. Browser: log in dev or if PRODUCTION_BROWSER_LOGS is enabled
+if (isServer || !isProduction || PRODUCTION_BROWSER_LOGS) {
 	const loggerConfig: Record<Levels, Config> = {
 		1: {
 			verb: 'error',
@@ -62,7 +64,10 @@ if (!isProduction || LOG_IN_PRODUCTION) {
 			verb: 'info',
 			method: 'info',
 			colourDescription: 'blue',
-			serverColour: '\x1b[34m',
+			serverColour:
+				process.env.NEXT_PUBLIC_APP_ENV === 'development'
+					? '\x1b[34m' // Dark blue for development (light mode, my preference)
+					: '\x1b[96m', // Dark blue for Fly.io (can't be changed)
 			browserColour: 'color: #3498DB',
 		},
 		5: {
@@ -77,6 +82,9 @@ if (!isProduction || LOG_IN_PRODUCTION) {
 	function safeStringify(data: unknown): string {
 		if (typeof data === 'string') return data
 		if (data instanceof Promise) return 'Unresolved promise. Did you forget to await?'
+		if (data instanceof Error) {
+			return data.message
+		}
 
 		try {
 			return JSON.stringify(
@@ -113,7 +121,6 @@ if (!isProduction || LOG_IN_PRODUCTION) {
 	const createServerLogger = (config: (typeof loggerConfig)[keyof typeof loggerConfig], label: string) => {
 		return (...args: unknown[]) => {
 			const message = stringifyArguments(...args).join(' ')
-			// biome-ignore lint/suspicious/noConsole: logger
 			console[config.method](`${config.serverColour}${label} ${message}${resetServerColour}`)
 		}
 	}
@@ -129,7 +136,6 @@ if (!isProduction || LOG_IN_PRODUCTION) {
 	const createBrowserLogger = (config: (typeof loggerConfig)[keyof typeof loggerConfig], label: string) => {
 		return (...args: unknown[]): void => {
 			const message = stringifyArguments(...args).join(' ')
-			// biome-ignore lint/suspicious/noConsole: logger
 			console[config.method](`%c${label} ${message}`, config.browserColour)
 		}
 	}

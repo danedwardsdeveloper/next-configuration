@@ -1,4 +1,34 @@
-export * from './definitions/responseMessages'
 export * from './definitions/cookies'
 export * from './definitions/dates'
-export * from './definitions/httpStatus'
+export * from './definitions/sitemap'
+
+export type MonthIndexZeroed = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11
+
+export type HttpStatus =
+	| 200
+	| 201
+	| 202
+	| 204
+	| 206
+	| 300
+	| 301
+	| 302
+	| 303
+	| 304
+	| 307
+	| 308
+	| 400
+	| 401
+	| 403
+	| 404
+	| 405
+	| 409
+	| 410
+	| 415
+	| 422
+	| 429
+	| 500
+	| 501
+	| 502
+	| 503
+	| 504

@@ -1,6 +1,6 @@
 import jwt, { type JwtPayload } from 'jsonwebtoken'
 import { cookies } from 'next/headers'
-import { cookieDurations, cookieNames } from '../constants/cookies'
+import { cookieDurations, cookieNames } from '../constants/storagekeys'
 import { isProduction } from '../environment/publicVariables'
 import { jwtSecret } from '../environment/serverVariables'
 
