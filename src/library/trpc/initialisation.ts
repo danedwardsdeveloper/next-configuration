@@ -42,33 +42,33 @@ export const createTRPCRouter = t.router
 export const publicProcedure = t.procedure
 
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-	if (!ctx.token) throw new TRPCError({ code: 'UNAUTHORIZED' })
-
 	try {
 		const cookieStore = await cookies()
 		const authToken = cookieStore.get(cookieNames.token)?.value
 
-		if (authToken) {
-			const payload = jwt.verify(authToken, jwtSecret) as JwtPayload
-			const userId = payload.userId as number
-
-			if (!userId || Number.isNaN(userId)) {
-				throw new TRPCError({ code: 'UNAUTHORIZED' })
-			}
-
-			const [result] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
-
-			if (!result) {
-				throw new TRPCError({ code: 'UNAUTHORIZED' })
-			}
-
-			return next({
-				ctx: {
-					...ctx,
-					user: result,
-				},
-			})
+		if (!authToken) {
+			throw new TRPCError({ code: 'UNAUTHORIZED' })
 		}
+
+		const payload = jwt.verify(authToken, jwtSecret) as JwtPayload
+		const userId = payload.userId as number
+
+		if (!userId || Number.isNaN(userId)) {
+			throw new TRPCError({ code: 'UNAUTHORIZED' })
+		}
+
+		const [result] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+
+		if (!result) {
+			throw new TRPCError({ code: 'UNAUTHORIZED' })
+		}
+
+		return next({
+			ctx: {
+				...ctx,
+				user: result,
+			},
+		})
 	} catch {
 		throw new TRPCError({ code: 'UNAUTHORIZED' })
 	}
