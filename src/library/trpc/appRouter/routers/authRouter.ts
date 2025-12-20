@@ -1,9 +1,9 @@
 import { TRPCError } from '@trpc/server'
+import { eq } from 'drizzle-orm'
 import { cookies } from 'next/headers'
-import { cookieNames } from '../../../constants/storagekeys'
-import { database } from '../../../database/connection'
+import { db } from '@/library/database/connection'
+import { cookieNames } from '../../../constants/storageKeys'
 import { createAccountSchema, type DangerousUser, type SafeUser, signInSchema, users } from '../../../database/schema'
-import { equals } from '../../../database/utilities'
 import { hashPassword, verifyPassword } from '../../../utilities/hashPassword'
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../../initialisation'
 import { setAuthorisationToken } from '../../jwtUtilities'
@@ -12,7 +12,7 @@ export const authRouter = createTRPCRouter({
 	signIn: publicProcedure.input(signInSchema).mutation(async ({ input }) => {
 		const { email, password } = input
 
-		const [user] = await database.select().from(users).where(equals(users.email, email.toLowerCase())).limit(1)
+		const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase())).limit(1)
 
 		if (!user) {
 			throw new TRPCError({
@@ -51,7 +51,7 @@ export const authRouter = createTRPCRouter({
 	createAccount: publicProcedure.input(createAccountSchema).mutation(async ({ input }) => {
 		const { name, email, password } = input
 
-		const [existingUser] = await database.select().from(users).where(equals(users.email, email.toLowerCase())).limit(1)
+		const [existingUser] = await db.select().from(users).where(eq(users.email, email.toLowerCase())).limit(1)
 
 		if (existingUser) {
 			throw new TRPCError({
@@ -62,7 +62,7 @@ export const authRouter = createTRPCRouter({
 
 		const hashedPasswordValue = await hashPassword(password)
 
-		const [newUser] = await database
+		const [newUser] = await db
 			.insert(users)
 			.values({
 				name,

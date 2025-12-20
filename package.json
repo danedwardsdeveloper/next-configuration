@@ -8,6 +8,7 @@
 		"format": "biome format . --write",
 		"check": "biome check . --write --unsafe",
 		"typecheck": "tsc --noEmit --project tsconfig.typecheck.json",
+		"tc": "pnpm typecheck",
 		"links": " http://localhost:3000 --recurse",
 		"test": "vitest",
 		"generate": "drizzle-kit generate",

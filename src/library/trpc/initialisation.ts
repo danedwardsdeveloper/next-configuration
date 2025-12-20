@@ -1,11 +1,13 @@
 import { initTRPC, TRPCError } from '@trpc/server'
+import { eq } from 'drizzle-orm'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
+import { cookies } from 'next/headers'
 import superjson from 'superjson'
 import { ZodError } from 'zod'
-import type { TrpcMetadata } from '@/types/definitions/procedures'
+import { cookieNames } from '../constants/storageKeys'
 import { db } from '../database/connection'
 import { users } from '../database/schema'
-import { equals } from '../database/utilities'
-import { verifyToken } from './jwtUtilities'
+import { jwtSecret } from '../environment/serverVariables'
 
 const createInnerTRPCContext = async (token?: string, responseHeaders?: Headers) => {
 	return {
@@ -15,8 +17,8 @@ const createInnerTRPCContext = async (token?: string, responseHeaders?: Headers)
 	}
 }
 
-export const createTrpcContextWithToken = async (customHeaders: Headers, metadata: TrpcMetadata = {}) => {
-	return createInnerTrpcContext(customHeaders, metadata)
+export const createTrpcContextWithToken = async (token?: string, responseHeaders?: Headers) => {
+	return createInnerTRPCContext(token, responseHeaders)
 }
 
 export const createTRPCContext = async () => {
@@ -43,25 +45,30 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 	if (!ctx.token) throw new TRPCError({ code: 'UNAUTHORIZED' })
 
 	try {
-		const decoded = verifyToken(ctx.token)
-		const userId = decoded.userId || Number(decoded.sub)
+		const cookieStore = await cookies()
+		const authToken = cookieStore.get(cookieNames.token)?.value
 
-		if (!userId || Number.isNaN(userId)) {
-			throw new TRPCError({ code: 'UNAUTHORIZED' })
+		if (authToken) {
+			const payload = jwt.verify(authToken, jwtSecret) as JwtPayload
+			const userId = payload.userId as number
+
+			if (!userId || Number.isNaN(userId)) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' })
+			}
+
+			const [result] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+
+			if (!result) {
+				throw new TRPCError({ code: 'UNAUTHORIZED' })
+			}
+
+			return next({
+				ctx: {
+					...ctx,
+					user: result,
+				},
+			})
 		}
-
-		const [result] = await db.select().from(users).where(equals(users.id, userId)).limit(1)
-
-		if (!result) {
-			throw new TRPCError({ code: 'UNAUTHORIZED' })
-		}
-
-		return next({
-			ctx: {
-				...ctx,
-				user: result,
-			},
-		})
 	} catch {
 		throw new TRPCError({ code: 'UNAUTHORIZED' })
 	}
