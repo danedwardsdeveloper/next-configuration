@@ -1,5 +1,5 @@
 import { testDatabaseConnection } from './library/database/connection'
-import { isDevelopment } from './library/environment/publicVariables'
+import { isDevelopment } from './library/environment/environment'
 
 export async function register() {
 	if (isDevelopment) {

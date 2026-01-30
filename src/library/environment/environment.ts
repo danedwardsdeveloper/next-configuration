@@ -19,14 +19,6 @@ export const isDevelopment = appEnv === 'development'
 // For vitest - isDevelopment & isTest can be true at the same time
 export const isTest = process.env.NODE_ENV === 'test'
 
-/*
-Create a local database
-psql
-CREATE DATABASE project_name;
-*/
-
-export const developmentDatabaseString = 'postgresql://localhost/next_configuration'
-
 export const bareDomain = 'bare-domain.vercel.app'
 export const productionBaseUrl = `https://${bareDomain}`
 export const devBaseUrl = 'http://localhost:3000'

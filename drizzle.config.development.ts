@@ -1,4 +1,4 @@
-import { developmentDatabaseString } from '@/library/environment/publicVariables'
+import { secrets } from '@/library/environment/secrets.example'
 import { createDrizzleConfig } from './scripts/scriptUtilities/createDrizzleConfig'
 
-export default createDrizzleConfig(developmentDatabaseString)
+export default createDrizzleConfig(secrets.development.dbString)

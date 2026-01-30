@@ -1,5 +1,5 @@
 import { boolean, integer, pgEnum, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
+import { createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
 /*

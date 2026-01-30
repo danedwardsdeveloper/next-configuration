@@ -7,7 +7,7 @@ import { ZodError } from 'zod'
 import { cookieNames } from '../constants/storageKeys'
 import { db } from '../database/connection'
 import { users } from '../database/schema'
-import { jwtSecret } from '../environment/serverVariables'
+import { dynamicSecrets } from '../environment/secrets.example'
 
 const createInnerTRPCContext = async (token?: string, responseHeaders?: Headers) => {
 	return {
@@ -50,7 +50,7 @@ export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
 			throw new TRPCError({ code: 'UNAUTHORIZED' })
 		}
 
-		const payload = jwt.verify(authToken, jwtSecret) as JwtPayload
+		const payload = jwt.verify(authToken, dynamicSecrets.jwtSecret) as JwtPayload
 		const userId = payload.userId as number
 
 		if (!userId || Number.isNaN(userId)) {

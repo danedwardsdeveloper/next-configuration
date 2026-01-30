@@ -1,4 +1,4 @@
-import { stagingDatabaseString } from '@/library/environment/serverVariables'
+import { secrets } from '@/library/environment/secrets.example'
 import { createDrizzleConfig } from './scripts/scriptUtilities/createDrizzleConfig'
 
-export default createDrizzleConfig(stagingDatabaseString)
+export default createDrizzleConfig(secrets.staging.dbString)

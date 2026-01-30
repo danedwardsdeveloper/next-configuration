@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
 	// Redirect http to https for Google Search Console
 	if (request.headers.get('x-forwarded-proto') === 'http') {
 		const url = request.nextUrl.clone()

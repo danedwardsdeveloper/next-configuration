@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { MenuSideBar } from '@/components/MenuSideBar'
 import { TRPCProvider } from '@/components/providers/TRPCProvider'
 import { SidebarProvider } from '@/components/shadcn/sidebar'
-import { dynamicBaseUrl } from '@/library/environment/publicVariables'
+import { dynamicBaseUrl } from '@/library/environment/environment'
 
 const inter = Inter({
 	subsets: ['latin'],

@@ -1,18 +1,11 @@
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
-import type { DatabaseTarget } from '../constants/_misc_constants'
-import { appEnv, developmentDatabaseString } from '../environment/publicVariables'
-import { productionDatabaseString, stagingDatabaseString } from '../environment/serverVariables'
+import { appEnv } from '../environment/environment'
+import { dynamicSecrets, secrets } from '../environment/secrets.example'
 import logger from '../logger'
 import * as schema from './schema'
 
-export const dbConnectionConfig: Record<DatabaseTarget, string> = {
-	development: developmentDatabaseString,
-	staging: stagingDatabaseString,
-	production: productionDatabaseString,
-}
-
-const connectionString = dbConnectionConfig[appEnv]
+const connectionString = dynamicSecrets.dbString
 
 // exported for scripts/resetDatabase
 export function truncateConnectionString(cString: string): string {
@@ -44,7 +37,9 @@ let _productionDb: NodePgDatabase<typeof schema> | null = null
 
 export function getDevDb() {
 	if (!_devDb) {
-		const devPool = new Pool({ connectionString: developmentDatabaseString })
+		const devPool = new Pool({
+			connectionString: secrets.development.dbString, //
+		})
 		_devDb = drizzle(devPool, { schema })
 	}
 	return _devDb
@@ -52,7 +47,9 @@ export function getDevDb() {
 
 export function getStagingDb() {
 	if (!_stagingDb) {
-		const stagingPool = new Pool({ connectionString: stagingDatabaseString })
+		const stagingPool = new Pool({
+			connectionString: secrets.staging.dbString, //
+		})
 		_stagingDb = drizzle(stagingPool, { schema })
 	}
 	return _stagingDb
@@ -60,7 +57,9 @@ export function getStagingDb() {
 
 export function getProductionDb() {
 	if (!_productionDb) {
-		const productionPool = new Pool({ connectionString: productionDatabaseString })
+		const productionPool = new Pool({
+			connectionString: secrets.production.dbString, //
+		})
 		_productionDb = drizzle(productionPool, { schema })
 	}
 	return _productionDb

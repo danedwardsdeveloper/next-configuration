@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import urlJoin from 'url-join'
 import { utilityPathValues } from '@/library/constants/paths'
-import { dynamicBaseUrl } from '@/library/environment/publicVariables'
+import { dynamicBaseUrl } from '@/library/environment/environment'
 import type { SitemapEntry } from '@/types'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
